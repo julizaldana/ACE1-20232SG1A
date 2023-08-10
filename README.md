@@ -2,5 +2,5 @@
 <h2>Manuales<h2>
 <li>
     <ul>Manual tecnico</ul>
-    <ul>Manual de usuario<ul>
+    <ul>Manual de usuario</ul>
 </li>
