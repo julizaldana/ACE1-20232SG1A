@@ -14,7 +14,13 @@ unsigned long tiempoInicio;
 unsigned long tiempoActual;
 
 int puntaje = 0;
-
+//variable de generó o no generó
+bool genero=false;
+// guardar posicion de la comida
+int posicion_snake[64][2];
+int columna_comida;
+int fila_comida;
+int conteo_velocidad;
 nodoSnake* snake = nullptr; //Serpiente
 
 LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
@@ -25,7 +31,30 @@ boolean murio = false;
 boolean pausa = false;
 
 //-------------------------------------Acciones Serpiente-------------------------------------------------
+bool repetido=false;
 void pintarComida(){
+   columna_comida= random(0,16);
+   fila_comida=random(0,8);
+   int columna_snake;
+   int fila_snake;
+  int contador_temp=0;
+  for (int fila=0;fila<64;fila++){
+    for(int columna=0;columna<2;columna++){
+      fila_snake=posicion_snake[contador_temp][0];
+      columna_snake=posicion_snake[contador_temp][1];  
+      contador_temp++;  
+      if(columna_comida == columna_snake && fila_snake == fila_comida){
+        repetido=true;
+        pintarComida();
+      }else{
+        repetido=false;
+      }
+         
+    }
+  }
+  if (repetido==false){
+      pintarMatriz8x16(fila_comida, columna_comida);
+      }
   
 }
 void detectarpausa(){
@@ -77,13 +106,21 @@ int filaInicialRandom(){
 void juegoSnake(){
   snake = nullptr;
   direccionMov = 'R';
-  int colInicialSnake = colInicialRandom();
-  int filaInicialSnake = filaInicialRandom();
+  randomSeed(millis()); 
+  int colInicialSnake = random(0,2);
+  int filaInicialSnake = random(0,8);
+  if(colInicialSnake==1)
+    colInicialSnake=8;
   agregarSnake(filaInicialSnake, colInicialSnake);
   agregarSnake(filaInicialSnake, colInicialSnake+1);
   velocidadJuego = map(velocidad, 1, 4, 500, 50);
   pintarSnake();
-  //pintarComida();
+  if (genero==false){
+    pintarComida();
+    genero=true;
+  }
+  
+  
   tiempoInicio = millis();
   murio = false;
   while (!murio) {
@@ -97,6 +134,7 @@ void juegoSnake(){
       moverSnake();
       estasMuerto();
       pintarSnake();
+      
       tiempoInicio = tiempoActual;
     } 
   }
@@ -108,12 +146,24 @@ void juegoSnake(){
 }
 
 void pintarSnake(){
+
   matriz.clearDisplay(0);
   matriz.clearDisplay(1);
   nodoSnake* aux = snake;
+  
+   for (int fila = 0; fila < 64; fila++) {
+        for (int columna = 0; columna < 2; columna++) {
+            posicion_snake[fila][columna] = 0; // Establece todos los elementos en cero
+        }
+    }
+  
+  int contador_temp=0;
   while (aux!= nullptr) {
     pintarMatriz8x16(aux->fila, aux->column);
     aux = aux->sig;
+    posicion_snake[contador_temp][0]=aux->fila;
+    posicion_snake[contador_temp][1]=aux->column;
+    contador_temp++;
   }
 }
 
@@ -189,6 +239,7 @@ void detectarMov(){           //Detecta el Movimiento de los controles
   moverSnake();
   estasMuerto();
   pintarSnake();
+  
   tiempoInicio = millis();
 }
 //-----------------------------------------------------------------------------------------------------------
@@ -434,7 +485,6 @@ void setup() {
   //agregarSnake(0,3);
   Serial.begin(9600);
   
-
   //Serial.print(rand());
   //
   //
@@ -451,6 +501,7 @@ void setup() {
 void loop() {
   elegirVelocidad(); 
   juegoSnake();
+  
   /*
   detectarMov();
   actualizarMatrizSinDriver();
