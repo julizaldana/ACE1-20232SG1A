@@ -15,12 +15,12 @@ unsigned long tiempoActual;
 
 int puntaje = 0;
 //variable de generó o no generó
-bool genero=false;
+//bool genero=false;
 // guardar posicion de la comida
-int posicion_snake[64][2];
-int columna_comida;
-int fila_comida;
-int conteo_velocidad;
+//int posicion_snake[64][2];
+int columna_comida =random(0,16);
+int fila_comida=random(0,8);
+//int conteo_velocidad;
 nodoSnake* snake = nullptr; //Serpiente
 
 LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
@@ -32,6 +32,7 @@ boolean pausa = false;
 
 //-------------------------------------Acciones Serpiente-------------------------------------------------
 bool repetido=false;
+/*
 void pintarComida(){
    columna_comida= random(0,16);
    fila_comida=random(0,8);
@@ -57,6 +58,30 @@ void pintarComida(){
       }
   
 }
+*/
+
+void generarPosicionAleatoriaComida(){
+  while (validadPosicionComidaYSnake()) {
+    columna_comida = random(0,16);
+    fila_comida = random(0,8);
+  } 
+}
+
+bool validadPosicionComidaYSnake(){
+  nodoSnake* aux = snake;
+  while (aux != nullptr) {
+    if (columna_comida == aux->column && fila_comida == aux->fila) {
+      return true;
+    }
+    aux = aux->sig;
+  }
+  return false;
+}
+
+void pintarComida(int fila,int columna){
+  pintarMatriz8x16(fila, columna);
+}
+
 void detectarpausa(){
   tiempoActual = millis();
   if (tiempoActual - tiempoInicio < 300) {
@@ -104,6 +129,8 @@ int filaInicialRandom(){
 }
 
 void juegoSnake(){
+  puntaje = 0;
+  generarPosicionAleatoriaComida();
   snake = nullptr;
   direccionMov = 'R';
   randomSeed(millis()); 
@@ -115,12 +142,12 @@ void juegoSnake(){
   agregarSnake(filaInicialSnake, colInicialSnake+1);
   velocidadJuego = map(velocidad, 1, 4, 500, 50);
   pintarSnake();
+  /*
   if (genero==false){
     pintarComida();
     genero=true;
   }
-  
-  
+  */
   tiempoInicio = millis();
   murio = false;
   while (!murio) {
@@ -134,7 +161,6 @@ void juegoSnake(){
       moverSnake();
       estasMuerto();
       pintarSnake();
-      
       tiempoInicio = tiempoActual;
     } 
   }
@@ -146,24 +172,20 @@ void juegoSnake(){
 }
 
 void pintarSnake(){
-
   matriz.clearDisplay(0);
   matriz.clearDisplay(1);
+  pintarComida(fila_comida,columna_comida);
   nodoSnake* aux = snake;
-  
+  /*
    for (int fila = 0; fila < 64; fila++) {
         for (int columna = 0; columna < 2; columna++) {
             posicion_snake[fila][columna] = 0; // Establece todos los elementos en cero
         }
     }
-  
-  int contador_temp=0;
+  */
   while (aux!= nullptr) {
     pintarMatriz8x16(aux->fila, aux->column);
     aux = aux->sig;
-    posicion_snake[contador_temp][0]=aux->fila;
-    posicion_snake[contador_temp][1]=aux->column;
-    contador_temp++;
   }
 }
 
@@ -193,6 +215,18 @@ void moverSnake(){
     case 'U':
       snake ->fila--;
       break;
+  }
+  if (snake->fila == fila_comida && snake->column == columna_comida) {
+    snake->fila = tempFila;
+    snake->column = tempColumn;
+    agregarSnake(fila_comida, columna_comida);
+    generarPosicionAleatoriaComida();
+    puntaje++;
+    velocidadJuego = velocidadJuego -25;
+    if (velocidadJuego < 0) {
+      velocidadJuego = 0;
+    }
+    return;
   }
   byte tempFila2;
   byte tempColumn2;
@@ -239,7 +273,6 @@ void detectarMov(){           //Detecta el Movimiento de los controles
   moverSnake();
   estasMuerto();
   pintarSnake();
-  
   tiempoInicio = millis();
 }
 //-----------------------------------------------------------------------------------------------------------
@@ -415,7 +448,6 @@ void mostrarMensaje(int filaInicial,int colInicial,int mensaje[],int longitud,in
       desplazamiento++;
     }
   }
-  puntaje = 0;
   delay(retrasoFinal);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -425,6 +457,7 @@ void elegirVelocidad(){
   int mensajeVelocidad[3] = {0,-1,1};
   mostrarMensaje(2,1,mensajeVelocidad,3,0,100);
   boolean aceptar = false;
+  velocidad = 1;
   while (!aceptar) {
     tiempoActual = millis();
     if (tiempoActual - tiempoInicio < 300) {
