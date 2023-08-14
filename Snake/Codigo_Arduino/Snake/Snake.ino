@@ -13,14 +13,17 @@ int velocidad = 1; //Velocidad Elegida Por el Usuario
 unsigned long tiempoInicio;
 unsigned long tiempoActual;
 
+unsigned long tiempoInicio3Segundos= 0;
+unsigned long tiempoActual3Segundos;
+bool botonPresionado = false;
+
 int puntaje = 0;
-//variable de generó o no generó
-//bool genero=false;
-// guardar posicion de la comida
-//int posicion_snake[64][2];
+
+int cambioDeModo = false;
+
 int columna_comida =random(0,16);
 int fila_comida=random(0,8);
-//int conteo_velocidad;
+
 nodoSnake* snake = nullptr; //Serpiente
 
 LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
@@ -31,36 +34,26 @@ boolean murio = false;
 boolean pausa = false;
 
 //-------------------------------------Acciones Serpiente-------------------------------------------------
-bool repetido=false;
-/*
-void pintarComida(){
-   columna_comida= random(0,16);
-   fila_comida=random(0,8);
-   int columna_snake;
-   int fila_snake;
-  int contador_temp=0;
-  for (int fila=0;fila<64;fila++){
-    for(int columna=0;columna<2;columna++){
-      fila_snake=posicion_snake[contador_temp][0];
-      columna_snake=posicion_snake[contador_temp][1];  
-      contador_temp++;  
-      if(columna_comida == columna_snake && fila_snake == fila_comida){
-        repetido=true;
-        pintarComida();
-      }else{
-        repetido=false;
-      }
-         
+void presiono3Segundo(){
+  if (digitalRead(10) == HIGH) {
+    if (!botonPresionado) {
+      tiempoInicio3Segundos = millis();  // Iniciar el temporizador al presionar el botón
+      botonPresionado = true;
     }
+
+    if (millis() - tiempoInicio3Segundos >= 3000) {
+      // Realizar las acciones que desees aquí cuando el botón está presionado el tiempo deseado
+      cambioDeModo = true;
+    }
+  } else {
+    botonPresionado = false;  // Reiniciar el estado del botón si se suelta
   }
-  if (repetido==false){
-      pintarMatriz8x16(fila_comida, columna_comida);
-      }
-  
 }
-*/
 
 void generarPosicionAleatoriaComida(){
+  //randomSeed(millis());
+  columna_comida = random(0,16);
+  fila_comida = random(0,8);
   while (validadPosicionComidaYSnake()) {
     columna_comida = random(0,16);
     fila_comida = random(0,8);
@@ -129,46 +122,48 @@ int filaInicialRandom(){
 }
 
 void juegoSnake(){
-  puntaje = 0;
-  generarPosicionAleatoriaComida();
-  snake = nullptr;
-  direccionMov = 'R';
-  randomSeed(millis()); 
-  int colInicialSnake = random(0,2);
-  int filaInicialSnake = random(0,8);
-  if(colInicialSnake==1)
-    colInicialSnake=8;
-  agregarSnake(filaInicialSnake, colInicialSnake);
-  agregarSnake(filaInicialSnake, colInicialSnake+1);
-  velocidadJuego = map(velocidad, 1, 4, 500, 50);
-  pintarSnake();
-  /*
-  if (genero==false){
-    pintarComida();
-    genero=true;
-  }
-  */
-  tiempoInicio = millis();
-  murio = false;
-  while (!murio) {
-    detectarpausa();
-    if (pausa) {
-      continue;
+  cambioDeModo = false;
+  while (true) {
+    elegirVelocidad(); 
+    puntaje = 0;
+    generarPosicionAleatoriaComida();
+    snake = nullptr;
+    direccionMov = 'R';
+    randomSeed(millis()); 
+    int colInicialSnake = colInicialRandom();
+    int filaInicialSnake = filaInicialRandom();
+    agregarSnake(filaInicialSnake, colInicialSnake);
+    agregarSnake(filaInicialSnake, colInicialSnake+1);
+    velocidadJuego = map(velocidad, 1, 4, 500, 50);
+    pintarSnake();
+    tiempoInicio = millis();
+    murio = false;
+    while (!murio) {
+      presiono3Segundo();
+      if (cambioDeModo) {
+        return;
+      }
+      /*
+      detectarpausa();
+      if (pausa) {
+        continue;
+      }
+      */
+      detectarMov();
+      tiempoActual = millis();
+      if (tiempoActual - tiempoInicio >= velocidadJuego) {
+        moverSnake();
+        estasMuerto();
+        pintarSnake();
+        tiempoInicio = tiempoActual;
+      } 
     }
-    detectarMov();
-    tiempoActual = millis();
-    if (tiempoActual - tiempoInicio >= velocidadJuego) {
-      moverSnake();
-      estasMuerto();
-      pintarSnake();
-      tiempoInicio = tiempoActual;
-    } 
+    int decena = puntaje /10;
+    int unidad = puntaje %10;
+                  // G  A  M  E     O  V  E  R     0 0     Longitud 12
+    int mensaje[] = {10,11,12,13,-1,14,15,13,16,17,decena,unidad};
+    mostrarMensaje(2,0,mensaje,12,700,100);
   }
-  int decena = puntaje /10;
-  int unidad = puntaje %10;
-                // G  A  M  E     O  V  E  R     0 0     Longitud 12
-  int mensaje[] = {10,11,12,13,-1,14,15,13,16,17,decena,unidad};
-  mostrarMensaje(2,0,mensaje,12,700,100);
 }
 
 void pintarSnake(){
@@ -176,13 +171,6 @@ void pintarSnake(){
   matriz.clearDisplay(1);
   pintarComida(fila_comida,columna_comida);
   nodoSnake* aux = snake;
-  /*
-   for (int fila = 0; fila < 64; fila++) {
-        for (int columna = 0; columna < 2; columna++) {
-            posicion_snake[fila][columna] = 0; // Establece todos los elementos en cero
-        }
-    }
-  */
   while (aux!= nullptr) {
     pintarMatriz8x16(aux->fila, aux->column);
     aux = aux->sig;
@@ -512,45 +500,8 @@ void setup() {
   for (int i = 14; i <= 21; i++ ) {
     digitalWrite(i, HIGH);
   }
-  //agregarSnake(0,0);
-  //agregarSnake(0,1);
-  //agregarSnake(0,2);
-  //agregarSnake(0,3);
-  Serial.begin(9600);
-  
-  //Serial.print(rand());
-  //
-  //
-  //matriz.setLed(0, 1, 1, true);
-  //matriz.setLed(1, 5, 0, true);
-  //actualizarMatrizConDriver();
-  //mostrarMensaje(mensaje, 12, 0, true);
-  
-  //mostrarMensaje(2,1,mensajeVelocidad, 3, 0, true);
-  //pintarSnake();
-  //actualizarMensaje(2, 0, mensaje, 12, 0);
 }
 
 void loop() {
-  elegirVelocidad(); 
-  juegoSnake();
-  
-  /*
-  detectarMov();
-  actualizarMatrizSinDriver();
-  tiempoActual = millis();
-  if (tiempoActual - tiempoInicio >= velocidadJuego) {
-    moverSnake();
-    tiempoInicio = tiempoActual;
-  }
-  */
- /*
-  mostrarMensaje(mensaje, 12, desplazamiento, false);
-  tiempoActual = millis();
-  if (tiempoActual - tiempoInicio >= 200) {
-    desplazamiento++;
-    mostrarMensaje(mensaje, 12, desplazamiento, true);
-    tiempoInicio = tiempoActual;
-  }
-  */
+  //juegoSnake();
 }
