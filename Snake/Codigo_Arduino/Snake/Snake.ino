@@ -41,9 +41,10 @@ void presiono3Segundo(){
       botonPresionado = true;
     }
 
-    if (millis() - tiempoInicio3Segundos >= 3000) {
+    if (millis() - tiempoInicio3Segundos >= 1500) {
       // Realizar las acciones que desees aquí cuando el botón está presionado el tiempo deseado
       cambioDeModo = true;
+      botonPresionado = false;
     }
   } else {
     botonPresionado = false;  // Reiniciar el estado del botón si se suelta
@@ -75,24 +76,29 @@ void pintarComida(int fila,int columna){
   pintarMatriz8x16(fila, columna);
 }
 
+int estadoPresente = LOW;  
+int estadoPasado = LOW;     
+
 void detectarpausa(){
-  tiempoActual = millis();
-  if (tiempoActual - tiempoInicio < 300) {
+  estadoPresente = digitalRead(10);
+  if(estadoPresente == HIGH && estadoPasado == LOW ){
+    estadoPasado = estadoPresente;
     return;
   }
-  if (digitalRead(10) == HIGH && pausa == false) {
-    int decena = puntaje /10;
-    int unidad = puntaje %10;
-    int mensaje[] = {decena,-1,unidad};
-    mostrarMensaje(2,1,mensaje,3,0,0);
-    pausa = true;
-  }else if(digitalRead(10) == HIGH && pausa == true){
-    pintarSnake();
-    pausa = false;
-  }else{
-    return;
+  if(estadoPresente== LOW && estadoPasado == HIGH){
+    estadoPasado = estadoPresente;
+    if(pausa == false){
+      int decena = puntaje /10;
+      int unidad = puntaje %10;
+      int mensaje[] = {decena,-1,unidad};
+      mostrarMensaje(2,1,mensaje,3,0,0);
+      pausa = true;
+    }else{
+      tiempoInicio = tiempoActual;
+      pintarSnake();
+      pausa = false;
+    }
   }
-  tiempoInicio = tiempoActual;
 }
 
 void estasMuerto(){
@@ -122,8 +128,8 @@ int filaInicialRandom(){
 }
 
 void juegoSnake(){
-  cambioDeModo = false;
   while (true) {
+    cambioDeModo = false;
     elegirVelocidad(); 
     puntaje = 0;
     generarPosicionAleatoriaComida();
@@ -143,12 +149,10 @@ void juegoSnake(){
       if (cambioDeModo) {
         return;
       }
-      /*
       detectarpausa();
       if (pausa) {
         continue;
       }
-      */
       detectarMov();
       tiempoActual = millis();
       if (tiempoActual - tiempoInicio >= velocidadJuego) {
@@ -444,17 +448,19 @@ void elegirVelocidad(){
   tiempoInicio = millis();
   int mensajeVelocidad[3] = {0,-1,1};
   mostrarMensaje(2,1,mensajeVelocidad,3,0,100);
-  boolean aceptar = false;
+  //boolean aceptar = false;
   velocidad = 1;
-  while (!aceptar) {
+  while (true) {
+    presiono3Segundo();
+    if(cambioDeModo){
+      cambioDeModo = false;
+      return;
+    }
     tiempoActual = millis();
     if (tiempoActual - tiempoInicio < 300) {
       continue;
     }
-    if (digitalRead(10) == HIGH) {
-      //Codigo Aceptar
-      return;
-    }else if (digitalRead(23) == HIGH) {
+    if (digitalRead(23) == HIGH) {
       //Codigo Para Arriba
       velocidad++;
       if (velocidad > 4) {
@@ -503,5 +509,5 @@ void setup() {
 }
 
 void loop() {
-  //juegoSnake();
+  juegoSnake();
 }
