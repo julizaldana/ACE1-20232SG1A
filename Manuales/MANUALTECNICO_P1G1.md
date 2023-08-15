@@ -19,16 +19,48 @@ Todas las funciones, métodos de las modalidades se crearon directamente con bas
 
 **Explicación Archivos**
 
+Para la práctica se tienen a los siguientes archivos donde se trabajó toda la lógica y la programación.
 
+**Archivo .pdsprj de Proteus -  Con todo el diseño del juego, incluyendo todos los componentes que se trabajaron*
+
+![imagen archivos2](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/b60aaf07-3ea8-49a1-b0d9-e17021f42749)
+
+**Archivos Final.ino que contiene todo el código y la programación del juego y el archivo compilado del mismo; Final.ino.hex, que se usa en Proteus para que funcione correctamente el programa en general*
+
+![imagen archivos](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/04f4ecf2-af74-41ef-8868-940b150e3090)
 
 **Metodos más importantes**
 
+1. **mostrarMensajeMatriz():** Esta función es muy importante ya que se muestra el modo mensaje
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/b59981b4-4720-4dda-aa58-2f438e5efa1f)
 
+Se utilizan pequeñas funciones para poder pintar las leds y borrarlas, para que se muestre el mensaje de forma correcta. Al igual que se tiene una matriz, llamada mensaje, donde se contiene todo el mensaje, de <PRAC1 - GRUPO1 - SECCIÓN A>
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/a460bf1e-64b1-4534-8a50-56ad554f7500)
 
+2. **juegoSnake():** Esta función es fundamental ya que se inicializa, lo que son todas las funciones secundarias para poder hacer que el juego trabaje.
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/789da61f-3297-469c-8eed-dd27b2f7159c)
+
+3. **elegirVelocidad():** Esta función es determinante al momento de poder seleccionar y configurar la velocidad que tendrá la serpiente dentro del juego. 
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/5c7c3a1b-a6c5-41cb-ba32-a8aaeb396746)
+
+4. **detectarMov(): y moverSnake()** Función básica e importante, ya que se incializan y así se funcionan los botones de movimiento del programa.
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/73241d53-9d1a-4a3d-8648-a37e5665c9d3)
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/279eebf3-6e4a-4660-949d-750ece3309b3)
+
+5. **detectarPausa():** Importante para pausar el juego, y mostrar la puntuación
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/62602634-770c-49c3-b753-e9c141bda98d)
+
+6. Funciónes para mostrar y generar la comida:
+
+![image](https://github.com/julizaldana/ACE1-20232SG1A/assets/98117383/8381dc22-6ed4-4cff-80ef-881510126ed8)
 
 
 **Descripción de herramientas utilizadas**
-
 
 1. Arduino IDE: Se utilizó este IDE especial para poder simular la utilización de un puerto, para la conexión del código con el microcontrolador Arduino de forma simulada en Proteus. 
 2. Librería LedControl: Se utilizó esta librería que permite utilizar los drivers MAX7219 y MAX7221 para el funcionamiento correcto de las matrices de LEDs.
@@ -38,6 +70,6 @@ Todas las funciones, métodos de las modalidades se crearon directamente con bas
 
 **Conclusiones**
 
-1. 
-2.
-3. 
+1. Es importante conocer el microcontrolador Arduino, entender cuales son las partes, pines, salidas y entradas que tiene, porque son muy utiles al hacer cualquier tipo de proyecto, funcionamiento, aplicación en cualquier área que se requiera.
+2. Es importante tener conocimiento previos sobre el lenguaje C, C++ para poder basarse, y que se amucho más fácil poder realizar un programa cómo el que se realizó. Teniendo un conocimiento previo de como manejar variables, matrices, funciones, es muy útil.
+3. Conocer el funcionamiento básico de los puertos y salidas seriales del microcontrolador Arduino, es muy útil ya que se acostumbra uno a utilizar un componente tan funcional en muchas áreas.
