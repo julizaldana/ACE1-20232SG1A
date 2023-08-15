@@ -5,5 +5,5 @@
 | ------------- | ------------- |
 | Sergio Saul Ralda Mejia |  202103216  |
 | José David Panaza Batres  | 202111478 |
-| Paulo Fernando Mérida Salazar |   |
+| Paulo Fernando Mérida Salazar | 202002042 |
 | Julio Alejandro Zaldaña Ríos | 202110206 |
