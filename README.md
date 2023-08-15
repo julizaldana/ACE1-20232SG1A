@@ -1,6 +1,9 @@
-<h1>Practica 1<h1>
-<h2>Manuales<h2>
-<ul>
-    <li>Manual tecnico</li>
-    <li>Manual de usuario</li>
-</ul>
+## UNIVERSIDAD DE SAN CARLOS DE GUATEMALA
+## Repositorio - Práctica 1 - Laboratorio Arquitectura de Computadoras y Ensambladores 1 - Grupo 1
+
+| Nombre | Carnet |
+| ------------- | ------------- |
+| Sergio Saul Ralda Mejia |  202103216  |
+| José David Panaza Batres  | 202111478 |
+| Paulo Fernando Mérida Salazar |   |
+| Julio Alejandro Zaldaña Ríos | 202110206 |
