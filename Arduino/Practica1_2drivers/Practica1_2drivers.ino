@@ -82,7 +82,7 @@ void presiono3Segundo(){
   }
 }
 
-void mostrarMensaje() {
+void mostrarMensajeMatriz() {
   //cambioDeModo = false;
   while(!cambioDeModo){
     if (digitalRead(53) == LOW) {

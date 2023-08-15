@@ -1,5 +1,48 @@
 #include "LedControl.h"
 
+//------------------------------------------------------------------------------------------------------
+int cambioDeModo = false; 
+unsigned long tiempoInicio3Segundos= 0;
+bool botonPresionado = false;
+int velocidad = 1; //Velocidad Elegida Por el Usuario
+int potenciometro = 0;
+LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
+int tamMensajeX = 168;
+int tamMensajeY = 8;
+byte mensaje[8][168] = {{0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0 },
+                        {0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0 },
+                        {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
+                        {0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0 },
+                        {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0 },
+                        {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 },
+                        {0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0 },
+                        {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 } };
+
+int offset = 0;
+void pintarLed(int x, int y) {
+	if (x >= 0 && x <= 7)
+		matriz.setLed(0, y, x, true); // manipulo matriz sin driver
+	else if (x >= 8 && x <= 15)
+		matriz.setLed(1, y, x-8, true); //  " " con driver
+}
+
+void borrarLed(int x, int y) {
+  if(x >= 0 && x <= 7)
+    matriz.setLed(0,y,x,false);
+	else if (x >= 8 && x <= 15)
+		matriz.setLed(1, y, x - 8, false); //  " " con driver
+}
+
+byte estado[8][16] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, \
+                       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, };
+//------------------------------------------------------------------------------------------------------
+
 struct nodoSnake{  //Nodo que conformara el cuerpo de la serpiente
   byte column;
   byte fila;
@@ -8,32 +51,31 @@ struct nodoSnake{  //Nodo que conformara el cuerpo de la serpiente
 
 int velocidadJuego = 500; //Velocidad Juego 
 
-int velocidad = 1; //Velocidad Elegida Por el Usuario
+
 
 unsigned long tiempoInicio;
 unsigned long tiempoActual;
 
-unsigned long tiempoInicio3Segundos= 0;
-unsigned long tiempoActual3Segundos;
-bool botonPresionado = false;
+
+//unsigned long tiempoActual3Segundos;
+
 
 int puntaje = 0;
 
-int cambioDeModo = false; 
+
 
 int columna_comida =random(0,16);
 int fila_comida=random(0,8);
 
 nodoSnake* snake = nullptr; //Serpiente
 
-LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
+//LedControl matriz = LedControl(13,11,12,2); //Matriz con driver
 
 char direccionMov = 'R';
 
 boolean murio = false;
 boolean pausa = false;
 
-//-------------------------------------Acciones Serpiente-------------------------------------------------
 void presiono3Segundo(){
   if (digitalRead(10) == HIGH) {
     if (!botonPresionado) {
@@ -50,6 +92,75 @@ void presiono3Segundo(){
     botonPresionado = false;  // Reiniciar el estado del botón si se suelta
   }
 }
+void mostrarMensajeMatriz() {
+  cambioDeModo = false;
+  while(!cambioDeModo){
+    if (digitalRead(53) == LOW) {
+      for (int i = 0; i < tamMensajeY; i++)
+        for (int j = 0; j < tamMensajeX; j++) {
+          if (mensaje[i][j] == 1) {
+            int residuo = (j + offset) % tamMensajeX;
+            pintarLed(residuo < 0 ? residuo + tamMensajeX : residuo, i);
+          }
+        }
+      //                   vv
+      // analogRead(A0);
+      // 0  - 1023 -- entrada análoga
+      // 1  -   15 -- velocidad
+      //                   ||
+      //                   ||
+      //                   vv
+      potenciometro = analogRead(A0);
+      velocidad = map(potenciometro, 0, 1024, 1, 15);    
+      for (int i = 0; i <= 10 + (2 * velocidad); i++) {
+        delay(15);
+      }
+      if (digitalRead(52) == LOW)
+        offset++;
+      else
+        offset--;    
+      
+      matriz.clearDisplay(0);
+      matriz.clearDisplay(1);      
+      presiono3Segundo();
+      if(cambioDeModo)
+          return;
+    } else if (digitalRead(53) == HIGH) {
+      for (int k = 0; k < 28 && k >= 0;) {
+        if (digitalRead(52) == HIGH) {
+          if (k < 28)
+            k++;
+          else k=0;
+        } else {
+          if (k > 0)
+            k--;
+          else k=27;
+        }
+        for (int i = 0; i < 8; i++) {
+          for (int j = 6 * k; j < (6 * k) + 6; j++) {
+            if (mensaje[i][j] == 1) {
+              pintarLed((j % 6) + 8, i);
+            }
+          }
+        }
+        potenciometro = analogRead(A0);
+        velocidad = map(potenciometro, 0, 1024, 1, 15);
+        for (int i = 0; i <= 10 + (2 * velocidad); i++) {
+          delay(15);
+        }
+        if (digitalRead(53) == LOW )
+          break;
+        matriz.clearDisplay(0);
+        matriz.clearDisplay(1);        
+        presiono3Segundo();
+        if(cambioDeModo)
+          return;
+      }
+    }
+  }
+}
+//-------------------------------------Acciones Serpiente-------------------------------------------------
+
 
 void generarPosicionAleatoriaComida(){
   //randomSeed(millis());
@@ -144,7 +255,7 @@ void juegoSnake(){
     pintarSnake();
     tiempoInicio = millis();
     murio = false;
-    delay(500);
+    delay(650);
     while (!murio) {
       presiono3Segundo();
       if (cambioDeModo) {
@@ -506,8 +617,12 @@ void setup() {
   for (int i = 14; i <= 21; i++ ) {
     digitalWrite(i, HIGH);
   }
+  pinMode(53,INPUT);
+  pinMode(52,INPUT);
+  pinMode(10,INPUT);
 }
 
 void loop() {
+  mostrarMensajeMatriz();
   juegoSnake();
 }
