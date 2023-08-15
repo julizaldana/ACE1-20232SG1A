@@ -19,7 +19,7 @@ bool botonPresionado = false;
 
 int puntaje = 0;
 
-int cambioDeModo = false;
+int cambioDeModo = false; 
 
 int columna_comida =random(0,16);
 int fila_comida=random(0,8);
@@ -144,6 +144,7 @@ void juegoSnake(){
     pintarSnake();
     tiempoInicio = millis();
     murio = false;
+    delay(500);
     while (!murio) {
       presiono3Segundo();
       if (cambioDeModo) {
@@ -484,7 +485,6 @@ void elegirVelocidad(){
   }
 }
 //------------------------------------------------------------------------------------------------------------
-
 void setup() {
   int pines_Control[] = {23,25,28,30,10}; // Pines de control de Movimiento
   for (int i = 0; i < 5 ; i++) {
